@@ -29,7 +29,7 @@ class ZapretInfo:
             sert = ''.join(data[1:-1])
         else:
             sert = ''.join(data)
-  		sert = b64encode(sert)
+	sert = b64encode(sert)
 			
         client = suds.client.Client(API_URL)
         result=client.service.sendRequest(xml,sert)
