@@ -20,4 +20,4 @@ Python class for http://zapret-info.gov.ru/ API
 
 Также требуется отсоединенная электронная подпись в формате PKCS#7
 
-Описание текущего API http://zapret-info.gov.ru/docs/description_for_operators_2013-03-19v1.5.pdf
+Описание текущего API http://vigruzki.rkn.gov.ru/docs/description_for_operators_actual.pdf
