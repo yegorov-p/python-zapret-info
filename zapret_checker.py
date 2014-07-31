@@ -10,7 +10,6 @@ import zipfile
 from base64 import b64decode
 import json
 import xml.etree.ElementTree as etree
-import ipcalc
 
 XML_FILE_NAME = "req_new.xml"
 P7S_FILE_NAME = "request.xml.sign"
