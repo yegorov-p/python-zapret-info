@@ -10,7 +10,7 @@ from base64 import b64encode
 API_URL = "http://vigruzki.rkn.gov.ru/services/OperatorRequest/?wsdl"
 # API_URL = "http://vigruzki.rkn.gov.ru/services/OperatorRequestTest/?wsdl"
 
-class ZapretInfo:
+class ZapretInfo(object):
     def getLastDumpDateEx(self):
         '''
         Оставлен для совместимости. Аналогичен getLastDumpDateEx, но возвращает только один
@@ -33,9 +33,9 @@ class ZapretInfo:
         '''
         Метод предназначен для направления запроса на получение выгрузки из реестра.
         '''
-        file = open(requestFile, "rb")
-        data = file.read()
-        file.close()
+        with open(requestFile, "rb") as f:
+            data = file.read()
+
         xml = b64encode(data)
 
         file = open(signatureFile, "rb")
