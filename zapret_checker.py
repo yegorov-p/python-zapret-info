@@ -32,14 +32,14 @@ if os.path.exists('dump.xml'):
 
     dt = datetime.strptime(data.attrib['updateTime'][:19], '%Y-%m-%dT%H:%M:%S')
     updateTime = int(time.mktime(dt.timetuple()))
-    logger.info('Got updateTime: %s' % updateTime)
+    logger.info('Got updateTime: %s', updateTime)
 
     dt = datetime.strptime(data.attrib['updateTimeUrgently'][:19], '%Y-%m-%dT%H:%M:%S')
     updateTimeUrgently = int(time.mktime(dt.timetuple()))
-    logger.info('Got updateTimeUrgently: %s' % updateTimeUrgently)
+    logger.info('Got updateTimeUrgently: %s', updateTimeUrgently)
 
     fromFile = max(updateTime, updateTimeUrgently)
-    logger.info('Got latest update time: %s' % fromFile)
+    logger.info('Got latest update time: %s', fromFile)
 else:
     logger.info('dump.xml does not exist')
     fromFile = 0
