@@ -3,13 +3,11 @@
 # yegorov-p.ru
 
 from xml.etree.ElementTree import ElementTree
-from datetime import datetime,timedelta
+from datetime import datetime
 from zapretinfo import ZapretInfo
 import time
 import zipfile
 from base64 import b64decode
-import json
-import xml.etree.ElementTree as etree
 from optparse import OptionParser
 
 parser = OptionParser()
@@ -50,9 +48,8 @@ if max(opener.getLastDumpDateEx().lastDumpDate, opener.getLastDumpDateEx().lastD
             if request['result']:
                 #Архив получен, скачиваем его и распаковываем
                 print 'Got it!'
-                file = open('result.zip', "wb")
-                file.write(b64decode(request['registerZipArchive']))
-                file.close()
+                with open('result.zip', "wb") as f:
+                    f.write(b64decode(request['registerZipArchive']))
 
                 try:
                     zip_file = zipfile.ZipFile('result.zip', 'r')
