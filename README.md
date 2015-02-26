@@ -1,6 +1,8 @@
 python-zapret-info
 ==================
 
+[![Code Health](https://landscape.io/github/yegorov-p/python-zapret-info/master/landscape.svg?style=flat)](https://landscape.io/github/yegorov-p/python-zapret-info/master)
+
 Python class for http://zapret-info.gov.ru/ API
 
 Для работы требуется сгенерировать XML вида
