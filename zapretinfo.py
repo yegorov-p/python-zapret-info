@@ -34,7 +34,7 @@ class ZapretInfo(object):
         Метод предназначен для направления запроса на получение выгрузки из реестра.
         '''
         with open(requestFile, "rb") as f:
-            data = file.read()
+            data = f.read()
 
         xml = b64encode(data)
 
