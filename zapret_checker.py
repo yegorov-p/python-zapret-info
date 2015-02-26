@@ -54,7 +54,7 @@ if max(session.getLastDumpDateEx().lastDumpDate, session.getLastDumpDateEx().las
     logger.info('Checking request status')
     if request['result']:
         code = request['code']
-        logger.info('Got code', code)
+        logger.info('Got code %s', code)
         while 1:
             logger.info('Trying to get result...')
             request = session.getResult(code)
