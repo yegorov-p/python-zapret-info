@@ -9,70 +9,78 @@ import time
 import zipfile
 from base64 import b64decode
 from optparse import OptionParser
+import os.path
+import logging
 
 parser = OptionParser()
 parser.add_option("-r", "--request", dest="req",
-    help="full path to request.xml file", metavar="REQ")
+                  help="full path to request.xml file", metavar="REQ")
 parser.add_option("-s", "--signature", dest="sig",
-    help="full path to digital signature file (in PKCS#7 format)", metavar="SIG")
+                  help="full path to digital signature file (in PKCS#7 format)", metavar="SIG")
 (options, args) = parser.parse_args()
 
 XML_FILE_NAME = options.req
 P7S_FILE_NAME = options.sig
 
-#Если файлик ранее выгружался, то пробуем получить из него данные
-dt = datetime.strptime(ElementTree().parse("dump.xml").attrib['updateTime'][:19],'%Y-%m-%dT%H:%M:%S')
-updateTime=int(time.mktime(dt.timetuple()))
-try:
-    dt = datetime.strptime(ElementTree().parse("dump.xml").attrib['updateTimeUrgently'][:19],'%Y-%m-%dT%H:%M:%S')
-    updateTimeUrgently=int(time.mktime(dt.timetuple()))
-except:
-    updateTimeUrgently=0
-fromFile = max(updateTime,updateTimeUrgently)
+logging.basicConfig(format=u'%(levelname)-8s [%(asctime)s]  %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-opener=ZapretInfo()
+logger.info('Check if dump.xml already exists')
+if os.path.exists('dump.xml'):
+    logger.info('dump.xml already exists')
+    data = ElementTree().parse("dump.xml")
 
-#Проверяем, изменился ли файлик
-if max(opener.getLastDumpDateEx().lastDumpDate, opener.getLastDumpDateEx().lastDumpDateUrgently)/1000<>fromFile:
-    #Файлик изменился. Отправляем запрос на выгрузку
-    request=opener.sendRequest(XML_FILE_NAME,P7S_FILE_NAME)
-    #Проверяем, принят ли запрос к обработке
+    dt = datetime.strptime(data.attrib['updateTime'][:19], '%Y-%m-%dT%H:%M:%S')
+    updateTime = int(time.mktime(dt.timetuple()))
+    logger.info('Got updateTime: {}'.format(updateTime))
+
+    dt = datetime.strptime(data.attrib['updateTimeUrgently'][:19], '%Y-%m-%dT%H:%M:%S')
+    updateTimeUrgently = int(time.mktime(dt.timetuple()))
+    logger.info('Got updateTimeUrgently: {}'.format(updateTimeUrgently))
+
+    fromFile = max(updateTime, updateTimeUrgently)
+    logger.info('Got latest update time: {}'.format(fromFile))
+else:
+    logger.info('dump.xml does not exist')
+    fromFile = 0
+
+session = ZapretInfo()
+
+logger.info('Check if dump.xml has changes since last sync')
+if max(session.getLastDumpDateEx().lastDumpDate, session.getLastDumpDateEx().lastDumpDateUrgently) / 1000 <> fromFile:
+    logger.info('dump.xml has changed.')
+    logger.info('Sending request')
+    request = session.sendRequest(XML_FILE_NAME, P7S_FILE_NAME)
+    logger.info('Checking request status')
     if request['result']:
-        #Запрос не принят, получен код
-        code=request['code']
-        print 'Got code %s' % (code)
-        print 'Trying to get result...'
+        code = request['code']
+        logger.info('Got code', code)
         while 1:
-            #Пытаемся получить архив по коду
-            request=opener.getResult(code)
+            logger.info('Trying to get result...')
+            request = session.getResult(code)
             if request['result']:
-                #Архив получен, скачиваем его и распаковываем
-                print 'Got it!'
+                logger.info('Got it! Saving dump.')
                 with open('result.zip', "wb") as f:
                     f.write(b64decode(request['registerZipArchive']))
 
                 try:
+                    logger.info('Unpacking.')
                     zip_file = zipfile.ZipFile('result.zip', 'r')
                     zip_file.extract('dump.xml', '')
-                    zip_file.extractall('./dumps/%s'%datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                    zip_file.extractall('./dumps/%s' % datetime.now().strftime("%Y-%m-%d %H-%M-%S"))
                     zip_file.close()
-                    break
-                    
-                except :
-                    print 'Wrong file format'
+                except:
+                    logger.error('Wrong file format.')
                 break
+
             else:
-                #Архив не получен, проверяем причину.
-                if request['resultCode']==0:
-                    #Если это сообщение об обработке запроса, то просто ждем минутку.
-                    print 'Not ready yet.'
+                if request['resultCode'] == 0:
+                    logger.info('Not ready yet. Waiting for a minute.')
                     time.sleep(60)
                 else:
-                    #Если это любая другая ошибка, выводим ее и прекращаем работу
-                    print 'Error: %s' % request['resultComment']
+                    logger.error(request['resultComment'])
                     break
     else:
-        #Запрос не принят, возвращаем ошибку
-        print 'Error: %s' % request['resultComment']
+        logger.error(request['resultComment'])
 else:
-    print 'No updates'
+    logger.info('No updates')
