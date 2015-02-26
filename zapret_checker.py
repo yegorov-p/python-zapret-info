@@ -32,21 +32,21 @@ if os.path.exists('dump.xml'):
 
     dt = datetime.strptime(data.attrib['updateTime'][:19], '%Y-%m-%dT%H:%M:%S')
     updateTime = int(time.mktime(dt.timetuple()))
-    logger.info('Got updateTime: {}'.format(updateTime))
+    logger.info('Got updateTime: %s' % updateTime)
 
     dt = datetime.strptime(data.attrib['updateTimeUrgently'][:19], '%Y-%m-%dT%H:%M:%S')
     updateTimeUrgently = int(time.mktime(dt.timetuple()))
-    logger.info('Got updateTimeUrgently: {}'.format(updateTimeUrgently))
+    logger.info('Got updateTimeUrgently: %s' % updateTimeUrgently)
 
     fromFile = max(updateTime, updateTimeUrgently)
-    logger.info('Got latest update time: {}'.format(fromFile))
+    logger.info('Got latest update time: %s' % fromFile)
 else:
     logger.info('dump.xml does not exist')
     fromFile = 0
 
 session = ZapretInfo()
 
-logger.info('Check if dump.xml has changes since last sync')
+logger.info('Check if dump.xml has updates since last sync')
 if max(session.getLastDumpDateEx().lastDumpDate, session.getLastDumpDateEx().lastDumpDateUrgently) / 1000 <> fromFile:
     logger.info('dump.xml has changed.')
     logger.info('Sending request')
