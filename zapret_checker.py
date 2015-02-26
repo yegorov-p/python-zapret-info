@@ -10,9 +10,17 @@ import zipfile
 from base64 import b64decode
 import json
 import xml.etree.ElementTree as etree
+from optparse import OptionParser
 
-XML_FILE_NAME = "req_new.xml"
-P7S_FILE_NAME = "request.xml.sign"
+parser = OptionParser()
+parser.add_option("-r", "--request", dest="req",
+    help="full path to request.xml file", metavar="REQ")
+parser.add_option("-s", "--signature", dest="sig",
+    help="full path to digital signature file (in PKCS#7 format)", metavar="SIG")
+(options, args) = parser.parse_args()
+
+XML_FILE_NAME = options.req
+P7S_FILE_NAME = options.sig
 
 #Если файлик ранее выгружался, то пробуем получить из него данные
 dt = datetime.strptime(ElementTree().parse("dump.xml").attrib['updateTime'][:19],'%Y-%m-%dT%H:%M:%S')
