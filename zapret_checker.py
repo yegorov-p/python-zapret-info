@@ -69,7 +69,7 @@ if max(session.getLastDumpDateEx().lastDumpDate, session.getLastDumpDateEx().las
                     zip_file.extract('dump.xml', '')
                     zip_file.extractall('./dumps/%s' % datetime.now().strftime("%Y-%m-%d %H-%M-%S"))
                     zip_file.close()
-                except:
+                except zipfile.BadZipfile:
                     logger.error('Wrong file format.')
                 break
 
