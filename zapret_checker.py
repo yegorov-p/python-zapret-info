@@ -8,19 +8,20 @@ from zapretinfo import ZapretInfo
 import time
 import zipfile
 from base64 import b64decode
-from optparse import OptionParser
+import argparse
 import os.path
 import logging
 
-parser = OptionParser()
-parser.add_option("-r", "--request", dest="req",
-                  help="full path to request.xml file", metavar="REQ")
-parser.add_option("-s", "--signature", dest="sig",
-                  help="full path to digital signature file (in PKCS#7 format)", metavar="SIG")
-(options, args) = parser.parse_args()
+parser = argparse.ArgumentParser(add_help=True, description='Downloads list of restricted websites')
+parser.add_argument("-r", "--request", action="store", required=True, type=str,
+                    help="full path to request.xml file")
+parser.add_argument("-s", "--signature", action="store", required=True, type=str,
+                    help="full path to digital signature file (in PKCS#7 format)")
 
-XML_FILE_NAME = options.req
-P7S_FILE_NAME = options.sig
+args = parser.parse_args()
+
+XML_FILE_NAME = args.request
+P7S_FILE_NAME = args.signature
 
 logging.basicConfig(format=u'%(levelname)-8s [%(asctime)s]  %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
