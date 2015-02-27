@@ -50,7 +50,7 @@ logger.info('Check if dump.xml has updates since last sync')
 if max(session.getLastDumpDateEx().lastDumpDate, session.getLastDumpDateEx().lastDumpDateUrgently) / 1000 <> fromFile:
     logger.info('dump.xml has changed.')
     logger.info('Sending request')
-    request = session.sendRequest(XML_FILE_NAME, P7S_FILE_NAME)
+    request = session.sendRequest(XML_FILE_NAME, P7S_FILE_NAME, '2.0')
     logger.info('Checking request status')
     if request['result']:
         code = request['code']
@@ -78,9 +78,9 @@ if max(session.getLastDumpDateEx().lastDumpDate, session.getLastDumpDateEx().las
                     logger.info('Not ready yet. Waiting for a minute.')
                     time.sleep(60)
                 else:
-                    logger.error(request['resultComment'])
+                    logger.error(request['resultComment'].decode('utf-8'))
                     break
     else:
-        logger.error(request['resultComment'])
+        logger.error(request['resultComment'].decode('utf-8'))
 else:
     logger.info('No updates')
