@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = "0.0.7"
-__author__ = "Pavel Yegorov"
+__version__ = "0.0.8"
+__author__ = "yegorov.p@gmail.com"
 
 import suds
 from base64 import b64encode
@@ -29,7 +29,7 @@ class ZapretInfo(object):
         result = client.service.getLastDumpDate()
         return result
 
-    def sendRequest(self, requestFile, signatureFile, versionNum=2.0):
+    def sendRequest(self, requestFile, signatureFile, versionNum='2.1'):
         '''
         Метод предназначен для направления запроса на получение выгрузки из реестра.
         '''
