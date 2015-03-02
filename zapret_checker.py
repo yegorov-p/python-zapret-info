@@ -17,42 +17,48 @@ parser.add_argument("-r", "--request", action="store", required=True, type=str,
                     help="full path to request.xml file")
 parser.add_argument("-s", "--signature", action="store", required=True, type=str,
                     help="full path to digital signature file (in PKCS#7 format)")
+parser.add_argument("-l", "--log", action="store", required=False, type=str,
+                    default='rkn_dump.log',
+                    help="log filename")
 
 args = parser.parse_args()
 
 XML_FILE_NAME = args.request
 P7S_FILE_NAME = args.signature
+LOG_FILE_NAME = args.log
 
-logging.basicConfig(format=u'%(levelname)-8s [%(asctime)s]  %(message)s', level=logging.INFO)
+logging.basicConfig(filename=LOG_FILE_NAME, filemode='a',
+                    format=u'%(levelname)-8s [%(asctime)s]  %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-logger.info('Check if dump.xml already exists')
+logger.info('Starting script.')
+logger.info('Check if dump.xml already exists.')
 if os.path.exists('dump.xml'):
     logger.info('dump.xml already exists')
     data = ElementTree().parse("dump.xml")
 
     dt = datetime.strptime(data.attrib['updateTime'][:19], '%Y-%m-%dT%H:%M:%S')
     updateTime = int(time.mktime(dt.timetuple()))
-    logger.info('Got updateTime: %s', updateTime)
+    logger.info('Got updateTime: %s.', updateTime)
 
     dt = datetime.strptime(data.attrib['updateTimeUrgently'][:19], '%Y-%m-%dT%H:%M:%S')
     updateTimeUrgently = int(time.mktime(dt.timetuple()))
-    logger.info('Got updateTimeUrgently: %s', updateTimeUrgently)
+    logger.info('Got updateTimeUrgently: %s.', updateTimeUrgently)
 
     fromFile = max(updateTime, updateTimeUrgently)
-    logger.info('Got latest update time: %s', fromFile)
+    logger.info('Got latest update time: %s.', fromFile)
 else:
     logger.info('dump.xml does not exist')
     fromFile = 0
 
 session = ZapretInfo()
 
-logger.info('Check if dump.xml has updates since last sync')
+logger.info('Check if dump.xml has updates since last sync.')
 if max(session.getLastDumpDateEx().lastDumpDate, session.getLastDumpDateEx().lastDumpDateUrgently) / 1000 <> fromFile:
     logger.info('dump.xml has changed.')
-    logger.info('Sending request')
+    logger.info('Sending request.')
     request = session.sendRequest(XML_FILE_NAME, P7S_FILE_NAME, '2.0')
-    logger.info('Checking request status')
+    logger.info('Checking request status.')
     if request['result']:
         code = request['code']
         logger.info('Got code %s', code)
@@ -84,4 +90,5 @@ if max(session.getLastDumpDateEx().lastDumpDate, session.getLastDumpDateEx().las
     else:
         logger.error(request['resultComment'].decode('utf-8'))
 else:
-    logger.info('No updates')
+    logger.info('No updates.')
+logger.info('Script stopped.')
