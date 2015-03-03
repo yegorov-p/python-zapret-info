@@ -1,14 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = "0.0.8"
+__version__ = "0.0.9"
 __author__ = "yegorov.p@gmail.com"
 
 import suds
 from base64 import b64encode
+import os
 
 API_URL = "http://vigruzki.rkn.gov.ru/services/OperatorRequest/?wsdl"
 # API_URL = "http://vigruzki.rkn.gov.ru/services/OperatorRequestTest/?wsdl"
+
+class ZapretInfoException(RuntimeError):
+    pass
+
 
 class ZapretInfo(object):
     def getLastDumpDateEx(self):
@@ -33,6 +38,11 @@ class ZapretInfo(object):
         '''
         Метод предназначен для направления запроса на получение выгрузки из реестра.
         '''
+        if not os.path.exists(requestFile):
+            raise ZapretInfoException('No request file')
+        if not os.path.exists(signatureFile):
+            raise ZapretInfoException('No signature file')
+
         with open(requestFile, "rb") as f:
             data = f.read()
 
