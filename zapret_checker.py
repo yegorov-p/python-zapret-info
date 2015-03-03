@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# yegorov-p.ru
+# yegorov.p@gmail.com
 
 from xml.etree.ElementTree import ElementTree
 from datetime import datetime
