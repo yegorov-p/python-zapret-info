@@ -28,13 +28,13 @@ P7S_FILE_NAME = args.signature
 LOG_FILE_NAME = args.log
 
 logging.basicConfig(filename=LOG_FILE_NAME, filemode='a',
-                    format=u'%(levelname)-8s [%(asctime)s]  %(message)s', level=logging.INFO)
+                    format=u'%(asctime)s  %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 logger.info('Starting script.')
 logger.info('Check if dump.xml already exists.')
 if os.path.exists('dump.xml'):
-    logger.info('dump.xml already exists')
+    logger.info('dump.xml already exists.')
     data = ElementTree().parse("dump.xml")
 
     dt = datetime.strptime(data.attrib['updateTime'][:19], '%Y-%m-%dT%H:%M:%S')
