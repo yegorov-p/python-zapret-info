@@ -55,7 +55,7 @@ session = ZapretInfo()
 
 logger.info('Check if dump.xml has updates since last sync.')
 if max(session.getLastDumpDateEx().lastDumpDate, session.getLastDumpDateEx().lastDumpDateUrgently) / 1000 <> fromFile:
-    logger.info('dump.xml has changed.')
+    logger.info('New dump is available.')
     logger.info('Sending request.')
     request = session.sendRequest(XML_FILE_NAME, P7S_FILE_NAME, '2.1')
     logger.info('Checking request status.')
