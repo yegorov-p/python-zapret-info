@@ -32,3 +32,11 @@ python zapret_checker.py
 
 ###crontab -e###
 */10 * * * * /путь_к_папке_со_скриптом && python zapret_checker.py -r req.xml -s req.der
+
+###При обновлении 10 марта###
+Перед обновлением 10 марта, либо если Вы получаете ошибку вида 
+
+    Exception: '<operatorName/>' not mapped to message part
+следует очистить кэш, например так:
+
+    rm /tmp/suds/*
