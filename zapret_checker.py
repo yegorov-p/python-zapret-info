@@ -56,6 +56,10 @@ session = ZapretInfo()
 
 logger.info('Check if dump.xml has updates since last sync.')
 last_dump = session.getLastDumpDateEx()
+logger.info('Current versions: webservice: %s, dump: %s, doc: %s',
+            last_dump.webServiceVersion,
+            last_dump.dumpFormatVersion,
+            last_dump.docVersion)
 if max(last_dump.lastDumpDate, last_dump.lastDumpDateUrgently) / 1000 <> fromFile:
     logger.info('New dump is available.')
     logger.info('Sending request.')
