@@ -11,6 +11,7 @@ from base64 import b64decode
 import argparse
 import os.path
 import logging
+import hashlib
 
 parser = argparse.ArgumentParser(add_help=True, description='Downloads list of restricted websites')
 parser.add_argument("-r", "--request", action="store", required=True, type=str,
@@ -68,10 +69,15 @@ if max(session.getLastDumpDateEx().lastDumpDate, session.getLastDumpDateEx().las
             logger.info('Trying to get result...')
             request = session.getResult(code)
             if request['result']:
-                logger.info('Got it! Saving dump.')
+                logger.info('Got a dump ver. %s for the %s (INN %s)',
+                            request['dumpFormatVersion'],
+                            request['operatorName'].decode('utf-8'),
+                            request['inn'])
                 with open('result.zip', "wb") as f:
                     f.write(b64decode(request['registerZipArchive']))
-
+                logger.info('Downloaded dump %d bytes, MD5 hashsum: %s',
+                            os.path.getsize('result.zip'),
+                            hashlib.md5(open('result.zip', 'rb').read()).hexdigest())
                 try:
                     logger.info('Unpacking.')
                     zip_file = zipfile.ZipFile('result.zip', 'r')
@@ -87,7 +93,7 @@ if max(session.getLastDumpDateEx().lastDumpDate, session.getLastDumpDateEx().las
                     logger.info('Not ready yet. Waiting for a minute.')
                     time.sleep(60)
                 else:
-                    logger.error(request['resultComment'].decode('utf-8'))
+                    logger.error('Got an error: %s', request['resultComment'].decode('utf-8'))
                     break
     else:
         logger.error(request['resultComment'].decode('utf-8'))
