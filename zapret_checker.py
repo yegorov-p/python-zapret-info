@@ -93,7 +93,9 @@ if max(session.getLastDumpDateEx().lastDumpDate, session.getLastDumpDateEx().las
                     logger.info('Not ready yet. Waiting for a minute.')
                     time.sleep(60)
                 else:
-                    logger.error('Got an error: %s', request['resultComment'].decode('utf-8'))
+                    logger.error('Got an error, code %d: %s',
+                                 request['resultCode'],
+                                 request['resultComment'].decode('utf-8'))
                     break
     else:
         logger.error(request['resultComment'].decode('utf-8'))
