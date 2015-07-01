@@ -13,11 +13,17 @@ import os.path
 import logging
 import hashlib
 
-parser = argparse.ArgumentParser(add_help=True, description='Downloads list of restricted websites')
+parser = argparse.ArgumentParser(
+    add_help=True, description='Downloads list of restricted websites')
 parser.add_argument("-r", "--request", action="store", required=True, type=str,
                     help="full path to request.xml file")
-parser.add_argument("-s", "--signature", action="store", required=True, type=str,
-                    help="full path to digital signature file (in PKCS#7 format)")
+parser.add_argument(
+    "-s",
+    "--signature",
+    action="store",
+    required=True,
+    type=str,
+    help="full path to digital signature file (in PKCS#7 format)")
 parser.add_argument("-l", "--log", action="store", required=False, type=str,
                     default='rkn_dump.log',
                     help="log filename")
@@ -42,7 +48,8 @@ if os.path.exists('dump.xml'):
     updateTime = int(time.mktime(dt.timetuple()))
     logger.info('Got updateTime: %s.', updateTime)
 
-    dt = datetime.strptime(data.attrib['updateTimeUrgently'][:19], '%Y-%m-%dT%H:%M:%S')
+    dt = datetime.strptime(
+        data.attrib['updateTimeUrgently'][:19], '%Y-%m-%dT%H:%M:%S')
     updateTimeUrgently = int(time.mktime(dt.timetuple()))
     logger.info('Got updateTimeUrgently: %s.', updateTimeUrgently)
 
@@ -60,7 +67,8 @@ logger.info('Current versions: webservice: %s, dump: %s, doc: %s',
             last_dump.webServiceVersion,
             last_dump.dumpFormatVersion,
             last_dump.docVersion)
-if max(last_dump.lastDumpDate, last_dump.lastDumpDateUrgently) / 1000 <> fromFile:
+if max(last_dump.lastDumpDate, last_dump.lastDumpDateUrgently) / \
+        1000 != fromFile:
     logger.info('New dump is available.')
     logger.info('Sending request.')
     request = session.sendRequest(XML_FILE_NAME, P7S_FILE_NAME, '2.1')
@@ -70,7 +78,7 @@ if max(last_dump.lastDumpDate, last_dump.lastDumpDateUrgently) / 1000 <> fromFil
         logger.info('Got code %s', code)
         time.sleep(60)
         logger.info('Waiting for a minute.')
-        while 1:
+        while True:
             logger.info('Trying to get result...')
             request = session.getResult(code)
             if request['result']:
@@ -80,14 +88,20 @@ if max(last_dump.lastDumpDate, last_dump.lastDumpDateUrgently) / 1000 <> fromFil
                             request['inn'])
                 with open('result.zip', "wb") as f:
                     f.write(b64decode(request['registerZipArchive']))
-                logger.info('Downloaded dump %d bytes, MD5 hashsum: %s',
-                            os.path.getsize('result.zip'),
-                            hashlib.md5(open('result.zip', 'rb').read()).hexdigest())
+                logger.info(
+                    'Downloaded dump %d bytes, MD5 hashsum: %s',
+                    os.path.getsize('result.zip'),
+                    hashlib.md5(
+                        open(
+                            'result.zip',
+                            'rb').read()).hexdigest())
                 try:
                     logger.info('Unpacking.')
                     zip_file = zipfile.ZipFile('result.zip', 'r')
                     zip_file.extract('dump.xml', '')
-                    zip_file.extractall('./dumps/%s' % datetime.now().strftime("%Y-%m-%d %H-%M-%S"))
+                    zip_file.extractall(
+                        './dumps/%s' %
+                        datetime.now().strftime("%Y-%m-%d %H-%M-%S"))
                     zip_file.close()
                 except zipfile.BadZipfile:
                     logger.error('Wrong file format.')

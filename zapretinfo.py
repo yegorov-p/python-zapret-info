@@ -16,13 +16,15 @@ class ZapretInfoException(RuntimeError):
 
 
 class ZapretInfo(object):
+    def __init__(self):
+        self.cl = suds.client.Client(API_URL)
+
     def getLastDumpDateEx(self):
         '''
         Оставлен для совместимости. Аналогичен getLastDumpDateEx, но возвращает только один
         параметр lastDumpDate.
         '''
-        client = suds.client.Client(API_URL)
-        result = client.service.getLastDumpDateEx()
+        result = self.cl.service.getLastDumpDateEx()
         return result
 
     def getLastDumpDate(self):
@@ -30,8 +32,7 @@ class ZapretInfo(object):
         Метод предназначен для получения временной метки последнего обновления выгрузки из реестра,
         а также для получения информации о версиях веб-сервиса, памятки и текущего формата выгрузки.
         '''
-        client = suds.client.Client(API_URL)
-        result = client.service.getLastDumpDate()
+        result = self.cl.service.getLastDumpDate()
         return result
 
     def sendRequest(self, requestFile, signatureFile, versionNum='2.1'):
@@ -57,8 +58,7 @@ class ZapretInfo(object):
             sert = ''.join(data)
 
         sert = b64encode(sert)
-        client = suds.client.Client(API_URL)
-        result = client.service.sendRequest(xml, sert, versionNum)
+        result = self.cl.service.sendRequest(xml, sert, versionNum)
 
         return dict(((k, v.encode('utf-8')) if isinstance(v, suds.sax.text.Text) else (k, v)) for (k, v) in result)
 
@@ -66,7 +66,6 @@ class ZapretInfo(object):
         '''
         Метод предназначен для получения результата обработки запроса - выгрузки из реестра
         '''
-        client = suds.client.Client(API_URL)
-        result = client.service.getResult(code)
+        result = self.cl.service.getResult(code)
 
         return dict(((k, v.encode('utf-8')) if isinstance(v, suds.sax.text.Text) else (k, v)) for (k, v) in result)
