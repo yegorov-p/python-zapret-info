@@ -35,7 +35,7 @@ class ZapretInfo(object):
         result = self.cl.service.getLastDumpDate()
         return result
 
-    def sendRequest(self, requestFile, signatureFile, versionNum='2.1'):
+    def sendRequest(self, requestFile, signatureFile, versionNum='2.2'):
         '''
         Метод предназначен для направления запроса на получение выгрузки из реестра.
         '''

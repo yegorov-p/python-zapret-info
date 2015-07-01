@@ -71,7 +71,7 @@ if max(last_dump.lastDumpDate, last_dump.lastDumpDateUrgently) / \
         1000 != fromFile:
     logger.info('New dump is available.')
     logger.info('Sending request.')
-    request = session.sendRequest(XML_FILE_NAME, P7S_FILE_NAME, '2.1')
+    request = session.sendRequest(XML_FILE_NAME, P7S_FILE_NAME, '2.2')
     logger.info('Checking request status.')
     if request['result']:
         code = request['code']
