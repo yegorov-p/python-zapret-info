@@ -24,6 +24,7 @@ parser.add_argument(
     required=False,
     type=str,
     help="full path to digital signature file (in PKCS#7 format)")
+
 parser.add_argument("-l", "--log", action="store", required=False, type=str,
                     default='rkn_dump.log',
                     help="log filename")
@@ -31,6 +32,14 @@ parser.add_argument("-l", "--log", action="store", required=False, type=str,
 parser.add_argument("-t", "--time", action="store_true", required=False,
                     default=False,
                     help="show last dump date")
+
+parser.add_argument("-d", "--dir", action="store", required=False, type=str,
+                    default='./dumps',
+                    help="path to dumps directory")
+
+parser.add_argument("-n", "--no_archives", action="store_true", required=False,
+                    default=False,
+                    help="do not save archives")
 
 args = parser.parse_args()
 
@@ -45,6 +54,11 @@ logger = logging.getLogger(__name__)
 
 def main():
     logger.info('Starting script.')
+    try:
+        os.mkdir(args.dir)
+    except OSError:
+        pass
+
     session = ZapretInfo()
 
     if args.time:
@@ -122,9 +136,10 @@ def main():
                             logger.info('Unpacking.')
                             zip_file = zipfile.ZipFile('result.zip', 'r')
                             zip_file.extract('dump.xml', '')
-                            zip_file.extractall(
-                                './dumps/%s' %
-                                datetime.now().strftime("%Y-%m-%d %H-%M-%S"))
+                            if not args.no_archives:
+                                zip_file.extractall(
+                                    '%s/%s' %
+                                    (args.dir, datetime.now().strftime("%Y-%m-%d %H-%M-%S")))
                             zip_file.close()
                         except zipfile.BadZipfile:
                             logger.error('Wrong file format.')
