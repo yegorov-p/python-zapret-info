@@ -54,10 +54,6 @@ logger = logging.getLogger(__name__)
 
 def main():
     logger.info('Starting script.')
-    try:
-        os.mkdir(args.dir)
-    except OSError:
-        pass
 
     session = ZapretInfo()
 
@@ -77,6 +73,11 @@ def main():
             logging.error('No signature file.')
             print 'No signature file.'
             return
+
+        try:
+            os.mkdir(args.dir)
+        except OSError:
+            pass
 
         logger.info('Check if dump.xml already exists.')
         if os.path.exists('dump.xml'):
