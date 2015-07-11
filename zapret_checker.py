@@ -47,23 +47,20 @@ XML_FILE_NAME = args.request
 P7S_FILE_NAME = args.signature
 LOG_FILE_NAME = args.log
 
-logging.basicConfig(filename=LOG_FILE_NAME, filemode='a',
-                    format=u'%(asctime)s  %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 
 def main():
-    logger.info('Starting script.')
-
     session = ZapretInfo()
 
     if args.time:
-        logger.info('Getting last dump date.')
         last_dump = session.getLastDumpDateEx()
         last_dump_date = max(last_dump.lastDumpDate, last_dump.lastDumpDateUrgently) / 1000
-        logger.info('Last dump date: %d', last_dump_date)
         print last_dump_date
     else:
+        logging.basicConfig(filename=LOG_FILE_NAME, filemode='a',
+                            format=u'%(asctime)s  %(message)s', level=logging.INFO)
+        logger = logging.getLogger(__name__)
+        logger.info('Starting script.')
+
         if not XML_FILE_NAME:
             logging.error('No XML file.')
             print 'No XML file.'
