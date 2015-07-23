@@ -137,7 +137,7 @@ def main():
                             if not args.no_archives:
                                 zip_file.extractall(
                                     '%s/%s' %
-                                    (args.dir, datetime.now().strftime("%Y-%m-%d %H-%M-%S")))
+                                    (args.dir, datetime.now().strftime("%Y-%m-%dT%H-%M-%S")))
                             zip_file.close()
                         except zipfile.BadZipfile:
                             logger.error('Wrong file format.')
