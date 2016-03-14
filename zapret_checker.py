@@ -64,11 +64,13 @@ def main():
         if not XML_FILE_NAME:
             logging.error('No XML file.')
             print 'No XML file.'
+            parser.usage()
             return
 
         if not P7S_FILE_NAME:
             logging.error('No signature file.')
             print 'No signature file.'
+            parser.usage()
             return
 
         try:
@@ -111,8 +113,8 @@ def main():
             if request['result']:
                 code = request['code']
                 logger.info('Got code %s', code)
+                logger.info('Waiting for a minute...')
                 time.sleep(60)
-                logger.info('Waiting for a minute.')
                 while True:
                     logger.info('Trying to get result...')
                     request = session.getResult(code)
