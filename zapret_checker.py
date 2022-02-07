@@ -100,9 +100,10 @@ def main():
 
         logger.info('Check if dump.xml has updates since last sync.')
         last_dump = session.getLastDumpDateEx()
-        logger.info('Current versions: webservice: %s, dump: %s, doc: %s',
+        logger.info('Current versions: webservice: %s, dump: %s, soc: %s, doc: %s',
                     last_dump.webServiceVersion,
                     last_dump.dumpFormatVersion,
+                    last_dump.dumpFormatVersionSocResources,
                     last_dump.docVersion)
         if max(last_dump.lastDumpDate, last_dump.lastDumpDateUrgently) / \
                 1000 != fromFile:
@@ -116,13 +117,12 @@ def main():
                 logger.info('Waiting for a minute...')
                 time.sleep(60)
                 while True:
+                    date_dir=datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
                     logger.info('Trying to get result...')
                     request = session.getResult(code)
                     if request['result']:
-                        logger.info('Got a dump ver. %s for the %s (INN %s)',
-                                    request['dumpFormatVersion'],
-                                    request['operatorName'].decode('utf-8'),
-                                    request['inn'])
+                        logger.info('Got Result dump ver. %s',
+                                    request['dumpFormatVersion'])
                         with open('result.zip', "wb") as f:
                             f.write(b64decode(request['registerZipArchive']))
                         logger.info(
@@ -139,7 +139,33 @@ def main():
                             if not args.no_archives:
                                 zip_file.extractall(
                                     '%s/%s' %
-                                    (args.dir, datetime.now().strftime("%Y-%m-%dT%H-%M-%S")))
+                                    (args.dir, date_dir))
+                            zip_file.close()
+                        except zipfile.BadZipfile:
+                            logger.error('Wrong file format.')
+                        
+                    requestSocResources = session.getResultSocResources(code)
+                    if requestSocResources['result']:
+                        logger.info('Got a SocResources dump ver. %s ',
+                                     requestSocResources['dumpFormatVersion'])
+
+                        with open('ResultSocResources.zip', "wb") as f:
+                            f.write(b64decode(requestSocResources['registerZipArchive']))
+                        logger.info(
+                            'Downloaded SocResources dump %d bytes, MD5 hashsum: %s',
+                            os.path.getsize('ResultSocResources.zip'),
+                            hashlib.md5(
+                                open(
+                                    'ResultSocResources.zip',
+                                    'rb').read()).hexdigest())
+                        try:
+                            logger.info('Unpacking.')
+                            zip_file = zipfile.ZipFile('ResultSocResources.zip', 'r')
+                            zip_file.extract('register.xml', '')
+                            if not args.no_archives:
+                                zip_file.extractall(
+                                    '%s/%s' %
+                                    (args.dir, date_dir))
                             zip_file.close()
                         except zipfile.BadZipfile:
                             logger.error('Wrong file format.')
