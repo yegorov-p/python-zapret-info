@@ -69,3 +69,11 @@ class ZapretInfo(object):
         result = self.cl.service.getResult(code)
 
         return dict(((k, v.encode('utf-8')) if isinstance(v, suds.sax.text.Text) else (k, v)) for (k, v) in result)
+    
+    def getResultSocResources(self, code):
+        '''
+        Метод предназначен для получения результата обработки запроса - выгрузки из реестра
+        '''
+        result = self.cl.service.getResultSocResources(code)
+
+        return dict(((k, v.encode('utf-8')) if isinstance(v, suds.sax.text.Text) else (k, v)) for (k, v) in result)
